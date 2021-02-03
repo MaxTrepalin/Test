@@ -1,0 +1,99 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <map>
+#include <string>
+#include "CLI.h"
+#include <fstream>
+
+using namespace std;
+
+struct Data {
+    string books;
+    string readers;
+    string taken_books;
+};
+
+void ReadData(map<string, Data>& lybrary, ifstream& file) {
+    Data data;
+    string key;
+       while (!file.eof()) {
+        getline(file, data.books);
+        getline(file, data.readers);
+        getline(file, data.taken_books);
+        key = data.books;
+        lybrary.insert(make_pair(key, data));
+    }
+}
+
+void ImportData(map<string, Data>& lybrary) {
+    ifstream file;
+    string address;
+    file.open("Lybrary.csv");
+
+        ReadData(lybrary, file);
+
+    file.close();
+}
+
+void FindPerson(map<string, Data> lybrary, string key) {
+    auto iterator = lybrary.find(key);
+    if (iterator != lybrary.end()) {
+        cout << iterator->second.books << " "
+             << iterator->second.readers << " "
+             << iterator->second.taken_books << " " << endl;
+    } else {
+        cout << "Не найдено в данном справочнике!" << endl;
+    }
+}
+
+void ShowList(map<string, Data> lybrary) {
+    cout << "\n\n\n\t-----ПОЛНЫЙ СПИСОК-----\n\n\n";
+      for (auto element : lybrary) {
+        cout << "Библиотека:  " << "-----" << endl << endl;
+        cout << " - " << element.first << endl;
+        cout << " - " << element.second.readers << endl;
+        cout <<  " - " <<element.second.taken_books << endl;
+    }
+}
+
+void WriteToFile(map<string, Data> lybrary, ofstream &file) {
+
+    for (auto iter : lybrary) {
+        file << iter.second.books << ";";
+        file << iter.second.readers << ";";
+        file << iter.second.taken_books << ";" << endl;
+    }
+}
+
+int main() {
+
+    system("chcp 65001");
+    map<string, Data> lybrary;
+
+    ImportData(lybrary);
+
+    Welcome();
+    ShowMenu();
+
+    int change;
+    char menu = '-';
+    while (menu != '9') {
+        cin >> menu;
+        switch (menu) {
+            case '1': {
+                ShowList(lybrary);
+                break;
+            }
+            case '2': {
+                string key;
+                cin >> key;
+                FindPerson(lybrary, key);
+                break;
+            }
+        }
+    }
+
+
+   //  WriteToFile(lybrary);
+}
